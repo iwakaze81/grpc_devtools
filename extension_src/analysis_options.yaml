@@ -1,0 +1,8 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    always_use_package_imports: true
+    prefer_null_aware_operators: true
+    always_put_control_body_on_new_line: true
+    prefer_const_constructors: true

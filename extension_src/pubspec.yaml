@@ -1,0 +1,24 @@
+name: grpc_devtools_extension
+description: Flutter web UI for the gRPC DevTools extension.
+publish_to: 'none'
+
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  devtools_app_shared: ^0.5.1
+  devtools_extensions: ^0.5.1
+  vm_service: ">=13.0.0 <16.0.0"
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

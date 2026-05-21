@@ -1,0 +1,18 @@
+# Dart/Flutter
+.dart_tool/
+.packages
+pubspec.lock
+*.g.dart
+
+# extension_src のビルド成果物（extension/devtools/build/ は公開対象なので除外しない）
+extension_src/build/
+extension_src/.dart_tool/
+extension_src/pubspec.lock
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store

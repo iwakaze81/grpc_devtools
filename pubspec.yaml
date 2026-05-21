@@ -1,0 +1,23 @@
+name: grpc_devtools
+description: A Flutter DevTools extension for visualizing and debugging gRPC calls in real time.
+version: 0.1.0
+homepage: https://github.com/iwakaze81/grpc_devtools
+repository: https://github.com/iwakaze81/grpc_devtools
+issue_tracker: https://github.com/iwakaze81/grpc_devtools/issues
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  grpc: ^3.2.4
+  protobuf: ^3.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  mockito: ^5.4.4
+  build_runner: ^2.5.4
