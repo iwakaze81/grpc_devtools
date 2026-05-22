@@ -4,8 +4,6 @@
 
 A Flutter DevTools extension for visualizing and debugging gRPC communication in real time.
 
-![grpc_devtools screenshot](https://raw.githubusercontent.com/iwakaze81/grpc_devtools/main/docs/screenshot.png)
-
 ## Features
 
 - List of gRPC calls (method name, status, duration)

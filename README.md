@@ -4,8 +4,6 @@
 
 Flutter アプリの gRPC 通信をリアルタイムで可視化・デバッグするための DevTools 拡張機能です。
 
-![grpc_devtools screenshot](https://raw.githubusercontent.com/iwakaze81/grpc_devtools/main/docs/screenshot.png)
-
 ## 機能
 
 - gRPC calls の一覧表示（メソッド名・ステータス・所要時間）
