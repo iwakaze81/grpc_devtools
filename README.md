@@ -39,7 +39,7 @@ final stub = YourServiceClient(
     // ...
   ),
   interceptors: [
-    if (!kReleaseMode) GrpcDevToolsInterceptor(),
+    GrpcDevToolsInterceptor(), // release ビルドでは自動的に no-op になります
   ],
 );
 ```

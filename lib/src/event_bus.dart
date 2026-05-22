@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:grpc/grpc.dart';
 
 import 'package:grpc_devtools/src/proto_decoder.dart';
@@ -14,7 +15,7 @@ const String kCallHeaders = 'ext.grpc_devtools.call_headers';
 const String kCallEnded = 'ext.grpc_devtools.call_ended';
 
 class GrpcDevToolsEventBus {
-  final _random = Random();
+  final _random = Random.secure();
 
   String generateCallId() {
     final ts = DateTime.now().microsecondsSinceEpoch;
@@ -29,6 +30,9 @@ class GrpcDevToolsEventBus {
     required Object? request,
     required Map<String, String> metadata,
   }) {
+    if (kReleaseMode) {
+      return;
+    }
     developer.postEvent(kCallStarted, {
       'callId': callId,
       'method': method,
@@ -44,6 +48,9 @@ class GrpcDevToolsEventBus {
     required RpcMessageDirection direction,
     required Object? message,
   }) {
+    if (kReleaseMode) {
+      return;
+    }
     developer.postEvent(kCallMessage, {
       'callId': callId,
       'direction': direction.name,
@@ -56,6 +63,9 @@ class GrpcDevToolsEventBus {
     required String callId,
     required Map<String, String> headers,
   }) {
+    if (kReleaseMode) {
+      return;
+    }
     developer.postEvent(kCallHeaders, {
       'callId': callId,
       'headers': jsonEncode(headers),
@@ -69,6 +79,10 @@ class GrpcDevToolsEventBus {
     Object? error,
     Map<String, String>? trailers,
   }) {
+    if (kReleaseMode) {
+      return;
+    }
+
     int statusCode;
     String statusMessage;
 

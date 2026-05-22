@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:grpc/grpc.dart';
 
 import 'package:grpc_devtools/src/event_bus.dart';
@@ -6,13 +7,13 @@ import 'package:grpc_devtools/src/rpc_call.dart';
 /// A [ClientInterceptor] that captures gRPC calls and sends them to the
 /// DevTools Extension via [dart:developer]'s [postEvent].
 ///
-/// Usage:
+/// In release builds this interceptor is a transparent passthrough — no data
+/// is collected or transmitted. You can therefore register it unconditionally:
+///
 /// ```dart
 /// final stub = MyServiceClient(
 ///   channel,
-///   interceptors: [
-///     if (kDebugMode) GrpcDevToolsInterceptor(),
-///   ],
+///   interceptors: [GrpcDevToolsInterceptor()],
 /// );
 /// ```
 class GrpcDevToolsInterceptor extends ClientInterceptor {
@@ -28,6 +29,10 @@ class GrpcDevToolsInterceptor extends ClientInterceptor {
     CallOptions options,
     ClientUnaryInvoker<Q, R> invoker,
   ) {
+    if (kReleaseMode) {
+      return invoker(method, request, options);
+    }
+
     final callId = _eventBus.generateCallId();
     final startTime = DateTime.now();
 
@@ -81,6 +86,10 @@ class GrpcDevToolsInterceptor extends ClientInterceptor {
     CallOptions options,
     ClientStreamingInvoker<Q, R> invoker,
   ) {
+    if (kReleaseMode) {
+      return invoker(method, requests, options);
+    }
+
     final callId = _eventBus.generateCallId();
     final startTime = DateTime.now();
 
