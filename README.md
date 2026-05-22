@@ -1,10 +1,12 @@
 # grpc_devtools
 
-A Flutter DevTools extension for visualizing and debugging gRPC calls in real time.
+[English](README.en.md)
+
+Flutter アプリの gRPC 通信をリアルタイムで可視化・デバッグするための DevTools 拡張機能です。
 
 ![grpc_devtools screenshot](https://raw.githubusercontent.com/iwakaze81/grpc_devtools/main/docs/screenshot.png)
 
-## Features
+## 機能
 
 - gRPC calls の一覧表示（メソッド名・ステータス・所要時間）
 - リクエスト / レスポンスの内容確認
@@ -12,18 +14,18 @@ A Flutter DevTools extension for visualizing and debugging gRPC calls in real ti
 - Streaming RPC のメッセージ一覧
 - 左右ペインのドラッグによるサイズ変更
 
-## Installation
+## インストール
 
-`pubspec.yaml` の `dev_dependencies` に追加します（デバッグ用途のため）。
+`pubspec.yaml` の `dependencies` に追加します。
 
 ```yaml
-dev_dependencies:
+dependencies:
   grpc_devtools:
     git:
       url: https://github.com/iwakaze81/grpc_devtools.git
 ```
 
-## Setup
+## セットアップ
 
 ### 1. Interceptor を追加
 
