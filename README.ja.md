@@ -14,11 +14,11 @@ Flutter アプリの gRPC 通信をリアルタイムで可視化・デバッグ
 
 ## インストール
 
-`pubspec.yaml` の `dependencies` に追加します。
+[pub.dev](https://pub.dev/packages/grpc_devtools) で最新バージョンを確認し、`pubspec.yaml` に追加します：
 
 ```yaml
 dependencies:
-  grpc_devtools: ^0.2.0
+  grpc_devtools: ^latest_version
 ```
 
 ## セットアップ
