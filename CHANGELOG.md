@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Update Installation section in README to reference pub.dev for the latest version.
+
 ## 0.2.1
 
 * No user-facing changes. Internal CI fix for automated pub.dev publishing.
