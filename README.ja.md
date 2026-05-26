@@ -18,7 +18,7 @@ Flutter アプリの gRPC 通信をリアルタイムで可視化・デバッグ
 
 ```yaml
 dependencies:
-  grpc_devtools: ^0.1.0
+  grpc_devtools: ^0.2.0
 ```
 
 ## セットアップ
@@ -37,7 +37,10 @@ final stub = YourServiceClient(
     // ...
   ),
   interceptors: [
-    GrpcDevToolsInterceptor(), // release ビルドでは自動的に no-op になります
+    GrpcDevToolsInterceptor(
+      // DevTools に表示したくないメタデータキーをマスク（opt-in）
+      maskedMetadataKeys: {'authorization'},
+    ),
   ],
 );
 ```
@@ -66,7 +69,7 @@ extensions:
 
 ## 注意事項
 
-- gRPC のメタデータ（認証トークンなど）も DevTools に表示されます。デバッグ目的の仕様ですが、センシティブな認証情報を扱う環境では注意してください。
+- gRPC のメタデータ（認証トークンなど）も DevTools に表示されます。`maskedMetadataKeys` で隠したいキーを指定すると、値が `***` で表示されます。
 - リリースビルドでは interceptor は完全に no-op になり、データの収集・送信は一切行いません。
 
 ## Requirements
