@@ -37,8 +37,11 @@ class GrpcDevToolsInterceptor extends ClientInterceptor {
 
   GrpcDevToolsInterceptor({
     GrpcDevToolsEventBus? eventBus,
-    this.maskedMetadataKeys = const {},
-  }) : _eventBus = eventBus ?? GrpcDevToolsEventBus();
+    Set<String> maskedMetadataKeys = const {},
+  })  : _eventBus = eventBus ?? GrpcDevToolsEventBus(),
+        maskedMetadataKeys = {
+          for (final k in maskedMetadataKeys) k.toLowerCase()
+        };
 
   @visibleForTesting
   Map<String, String> maskMetadata(Map<String, String> metadata) {

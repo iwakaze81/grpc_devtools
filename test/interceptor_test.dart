@@ -130,7 +130,7 @@ void main() {
       expect(result['x-request-id'], '123');
     });
 
-    test('matching is case-insensitive', () {
+    test('matching is case-insensitive — uppercase metadata key', () {
       final interceptor = GrpcDevToolsInterceptor(
         maskedMetadataKeys: {'authorization'},
       );
@@ -138,6 +138,16 @@ void main() {
         'Authorization': 'Bearer secret-token',
       });
       expect(result['Authorization'], '***');
+    });
+
+    test('matching is case-insensitive — uppercase maskedMetadataKeys entry', () {
+      final interceptor = GrpcDevToolsInterceptor(
+        maskedMetadataKeys: {'Authorization'},
+      );
+      final result = interceptor.maskMetadata({
+        'authorization': 'Bearer secret-token',
+      });
+      expect(result['authorization'], '***');
     });
 
     test('unspecified keys pass through unchanged', () {
