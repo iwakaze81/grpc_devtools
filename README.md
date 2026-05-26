@@ -18,7 +18,7 @@ Add to `dependencies` in your `pubspec.yaml`.
 
 ```yaml
 dependencies:
-  grpc_devtools: ^0.1.0
+  grpc_devtools: ^0.2.0
 ```
 
 ## Setup
@@ -37,7 +37,10 @@ final stub = YourServiceClient(
     // ...
   ),
   interceptors: [
-    GrpcDevToolsInterceptor(), // automatically becomes a no-op in release builds
+    GrpcDevToolsInterceptor(
+      // Mask sensitive metadata values from appearing in DevTools (opt-in).
+      maskedMetadataKeys: {'authorization'},
+    ),
   ],
 );
 ```
@@ -66,7 +69,7 @@ Run the app in debug mode and open the **grpc_devtools** tab in Flutter DevTools
 
 ## Notes
 
-- gRPC metadata (e.g. authorization tokens) is captured and displayed in DevTools. This is intentional for debugging purposes, but be mindful when using the extension in environments with sensitive credentials.
+- gRPC metadata (e.g. authorization tokens) is captured and displayed in DevTools. Use `maskedMetadataKeys` to hide sensitive values — they will appear as `***` instead.
 - The interceptor is a transparent no-op in release builds — no data is collected or transmitted.
 
 ## Requirements

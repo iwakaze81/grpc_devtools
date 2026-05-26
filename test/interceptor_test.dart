@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:grpc_devtools/src/event_bus.dart';
+import 'package:grpc_devtools/src/interceptor.dart';
 import 'package:grpc_devtools/src/rpc_call.dart';
 
 class FakeEventBus extends GrpcDevToolsEventBus {
   final List<String> events = [];
+  Map<String, String>? capturedMetadata;
 
   @override
   void emitCallStarted({
@@ -15,6 +17,7 @@ class FakeEventBus extends GrpcDevToolsEventBus {
     required Map<String, String> metadata,
   }) {
     events.add('started:$method:${type.name}');
+    capturedMetadata = metadata;
   }
 
   @override
@@ -105,6 +108,72 @@ void main() {
         message: 'res',
       );
       expect(bus.events, containsAll(['message:request', 'message:response']));
+    });
+  });
+
+  group('GrpcDevToolsInterceptor.maskMetadata', () {
+    test('returns same instance when maskedMetadataKeys is empty', () {
+      final interceptor = GrpcDevToolsInterceptor();
+      final metadata = {'authorization': 'Bearer token', 'x-request-id': '123'};
+      expect(interceptor.maskMetadata(metadata), same(metadata));
+    });
+
+    test('masks specified key', () {
+      final interceptor = GrpcDevToolsInterceptor(
+        maskedMetadataKeys: {'authorization'},
+      );
+      final result = interceptor.maskMetadata({
+        'authorization': 'Bearer secret-token',
+        'x-request-id': '123',
+      });
+      expect(result['authorization'], '***');
+      expect(result['x-request-id'], '123');
+    });
+
+    test('matching is case-insensitive — uppercase metadata key', () {
+      final interceptor = GrpcDevToolsInterceptor(
+        maskedMetadataKeys: {'authorization'},
+      );
+      final result = interceptor.maskMetadata({
+        'Authorization': 'Bearer secret-token',
+      });
+      expect(result['Authorization'], '***');
+    });
+
+    test('matching is case-insensitive — uppercase maskedMetadataKeys entry', () {
+      final interceptor = GrpcDevToolsInterceptor(
+        maskedMetadataKeys: {'Authorization'},
+      );
+      final result = interceptor.maskMetadata({
+        'authorization': 'Bearer secret-token',
+      });
+      expect(result['authorization'], '***');
+    });
+
+    test('unspecified keys pass through unchanged', () {
+      final interceptor = GrpcDevToolsInterceptor(
+        maskedMetadataKeys: {'authorization'},
+      );
+      final result = interceptor.maskMetadata({
+        'x-custom-header': 'value',
+        'content-type': 'application/grpc',
+      });
+      expect(result['x-custom-header'], 'value');
+      expect(result['content-type'], 'application/grpc');
+    });
+
+    test('masks multiple specified keys', () {
+      final interceptor = GrpcDevToolsInterceptor(
+        maskedMetadataKeys: {'authorization', 'x-api-key'},
+      );
+      final result = interceptor.maskMetadata({
+        'authorization': 'Bearer token',
+        'x-api-key': 'secret',
+        'x-request-id': '123',
+      });
+      expect(result['authorization'], '***');
+      expect(result['x-api-key'], '***');
+      expect(result['x-request-id'], '123');
     });
   });
 

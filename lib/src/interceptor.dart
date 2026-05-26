@@ -16,11 +16,45 @@ import 'package:grpc_devtools/src/rpc_call.dart';
 ///   interceptors: [GrpcDevToolsInterceptor()],
 /// );
 /// ```
+///
+/// To prevent sensitive metadata values (e.g. auth tokens) from appearing in
+/// DevTools, specify the keys you want to hide:
+///
+/// ```dart
+/// GrpcDevToolsInterceptor(
+///   maskedMetadataKeys: {'authorization'},
+/// )
+/// ```
+///
+/// Matching is case-insensitive. Masked values are replaced with `'***'`.
 class GrpcDevToolsInterceptor extends ClientInterceptor {
   final GrpcDevToolsEventBus _eventBus;
 
-  GrpcDevToolsInterceptor({GrpcDevToolsEventBus? eventBus})
-      : _eventBus = eventBus ?? GrpcDevToolsEventBus();
+  /// Metadata keys whose values will be replaced with `'***'` in DevTools.
+  ///
+  /// Matching is case-insensitive. Defaults to no masking.
+  final Set<String> maskedMetadataKeys;
+
+  GrpcDevToolsInterceptor({
+    GrpcDevToolsEventBus? eventBus,
+    Set<String> maskedMetadataKeys = const {},
+  })  : _eventBus = eventBus ?? GrpcDevToolsEventBus(),
+        maskedMetadataKeys = {
+          for (final k in maskedMetadataKeys) k.toLowerCase()
+        };
+
+  @visibleForTesting
+  Map<String, String> maskMetadata(Map<String, String> metadata) {
+    if (maskedMetadataKeys.isEmpty) {
+      return metadata;
+    }
+    return {
+      for (final entry in metadata.entries)
+        entry.key: maskedMetadataKeys.contains(entry.key.toLowerCase())
+            ? '***'
+            : entry.value,
+    };
+  }
 
   @override
   ResponseFuture<R> interceptUnary<Q, R>(
@@ -41,7 +75,7 @@ class GrpcDevToolsInterceptor extends ClientInterceptor {
       method: method.path,
       type: RpcCallType.unary,
       request: request,
-      metadata: options.metadata,
+      metadata: maskMetadata(options.metadata),
     );
 
     final response = invoker(method, request, options);
@@ -108,7 +142,7 @@ class GrpcDevToolsInterceptor extends ClientInterceptor {
       method: method.path,
       type: RpcCallType.streaming,
       request: null,
-      metadata: options.metadata,
+      metadata: maskMetadata(options.metadata),
     );
 
     final response = invoker(method, wrappedRequests, options);
