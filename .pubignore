@@ -1,0 +1,3 @@
+extension/devtools/build/canvaskit/*.symbols
+extension/devtools/build/canvaskit/chromium/*.symbols
+extension_src/
