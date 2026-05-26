@@ -1,3 +1,7 @@
+## 0.2.1
+
+* No user-facing changes. Internal CI fix for automated pub.dev publishing.
+
 ## 0.2.0
 
 * Add `maskedMetadataKeys` option to `GrpcDevToolsInterceptor`.
