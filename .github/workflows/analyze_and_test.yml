@@ -18,8 +18,19 @@ jobs:
           channel: stable
           cache: true
 
-      - run: flutter pub get
+      - name: Get dependencies
+        run: flutter pub get
 
-      - run: flutter analyze
+      - name: Analyze
+        run: flutter analyze
 
-      - run: flutter test
+      - name: Test
+        run: flutter test
+
+      - name: Get extension_src dependencies
+        working-directory: extension_src
+        run: flutter pub get
+
+      - name: Analyze extension_src
+        working-directory: extension_src
+        run: flutter analyze
