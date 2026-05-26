@@ -1,33 +1,31 @@
 # grpc_devtools
 
-[English](README.en.md)
+[日本語](README.ja.md)
 
-Flutter アプリの gRPC 通信をリアルタイムで可視化・デバッグするための DevTools 拡張機能です。
+A Flutter DevTools extension for visualizing and debugging gRPC communication in real time.
 
-## 機能
+## Features
 
-- gRPC calls の一覧表示（メソッド名・ステータス・所要時間）
-- リクエスト / レスポンスの内容確認
-- メタデータ・ヘッダー・トレーラーの確認
-- Streaming RPC のメッセージ一覧
-- 左右ペインのドラッグによるサイズ変更
+- List of gRPC calls (method name, status, duration)
+- Inspect request / response contents
+- View metadata, headers, and trailers
+- Message list for Streaming RPCs
+- Resizable left/right panes via drag
 
-## インストール
+## Installation
 
-`pubspec.yaml` の `dependencies` に追加します。
+Add to `dependencies` in your `pubspec.yaml`.
 
 ```yaml
 dependencies:
-  grpc_devtools:
-    git:
-      url: https://github.com/iwakaze81/grpc_devtools.git
+  grpc_devtools: ^0.1.0
 ```
 
-## セットアップ
+## Setup
 
-### 1. Interceptor を追加
+### 1. Add the Interceptor
 
-`GrpcDevToolsInterceptor` を gRPC チャンネルに追加します。
+Add `GrpcDevToolsInterceptor` to your gRPC channel.
 
 ```dart
 import 'package:grpc_devtools/grpc_devtools.dart';
@@ -39,14 +37,14 @@ final stub = YourServiceClient(
     // ...
   ),
   interceptors: [
-    GrpcDevToolsInterceptor(), // release ビルドでは自動的に no-op になります
+    GrpcDevToolsInterceptor(), // automatically becomes a no-op in release builds
   ],
 );
 ```
 
-### 2. DevTools Extension を有効化
+### 2. Enable the DevTools Extension
 
-アプリの `devtools_options.yaml`（`pubspec.yaml` と同じ階層）に追加します。
+Add the following to `devtools_options.yaml` (same directory as `pubspec.yaml`).
 
 ```yaml
 description: This file stores settings for Dart & Flutter DevTools.
@@ -54,23 +52,28 @@ extensions:
   - grpc_devtools: true
 ```
 
-### 3. アプリを起動して DevTools を開く
+### 3. Launch the App and Open DevTools
 
-デバッグモードでアプリを起動し、Flutter DevTools の **grpc_devtools** タブを開くと gRPC コールがリアルタイムで表示されます。
+Run the app in debug mode and open the **grpc_devtools** tab in Flutter DevTools — gRPC calls will appear in real time.
 
 ## Usage
 
-| 操作 | 内容 |
-|------|------|
-| コールをクリック | リクエスト・レスポンスの詳細を表示 |
-| 分割線をドラッグ | 左右ペインのサイズ変更 |
-| ゴミ箱アイコン | 全コールをクリア |
+| Action | Description |
+|--------|-------------|
+| Click a call | Show request/response details |
+| Drag the divider | Resize left/right panes |
+| Trash icon | Clear all calls |
+
+## Notes
+
+- gRPC metadata (e.g. authorization tokens) is captured and displayed in DevTools. This is intentional for debugging purposes, but be mindful when using the extension in environments with sensitive credentials.
+- The interceptor is a transparent no-op in release builds — no data is collected or transmitted.
 
 ## Requirements
 
-- Flutter 3.24.0 以上
-- Dart 3.4.0 以上
-- gRPC パッケージ (`grpc: ^3.2.4`)
+- Flutter 3.24.0 or later
+- Dart 3.4.0 or later
+- gRPC package (`grpc: >=3.2.4 <6.0.0`)
 
 ## License
 
