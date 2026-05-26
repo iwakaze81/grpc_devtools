@@ -42,7 +42,9 @@ class GrpcDevToolsInterceptor extends ClientInterceptor {
 
   @visibleForTesting
   Map<String, String> maskMetadata(Map<String, String> metadata) {
-    if (maskedMetadataKeys.isEmpty) return metadata;
+    if (maskedMetadataKeys.isEmpty) {
+      return metadata;
+    }
     return {
       for (final entry in metadata.entries)
         entry.key: maskedMetadataKeys.contains(entry.key.toLowerCase())
