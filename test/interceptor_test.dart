@@ -3,7 +3,6 @@ import 'package:grpc/grpc.dart';
 import 'package:grpc_devtools/src/event_bus.dart';
 import 'package:grpc_devtools/src/rpc_call.dart';
 
-// Records calls made to GrpcDevToolsEventBus for assertion in tests.
 class FakeEventBus extends GrpcDevToolsEventBus {
   final List<String> events = [];
 
@@ -49,76 +48,126 @@ class FakeEventBus extends GrpcDevToolsEventBus {
 }
 
 void main() {
-  group('GrpcDevToolsInterceptor', () {
-    late FakeEventBus eventBus;
-
-    setUp(() {
-      eventBus = FakeEventBus();
+  group('GrpcDevToolsEventBus', () {
+    test('generateCallId produces unique IDs', () {
+      final bus = GrpcDevToolsEventBus();
+      final ids = List.generate(100, (_) => bus.generateCallId());
+      expect(ids.toSet().length, 100);
     });
 
-    group('interceptUnary', () {
-      test('emits call_started and call_ended on success', () async {
-        const method = '/test.Service/Hello';
-        const options = <String, String>{};
-
-        eventBus.emitCallStarted(
-          callId: 'id1',
-          method: method,
-          type: RpcCallType.unary,
-          request: 'hello',
-          metadata: options,
-        );
-
-        expect(eventBus.events, contains('started:/test.Service/Hello:unary'));
-      });
-
-      test('emitCallEnded encodes GrpcError status code', () {
-        eventBus.emitCallEnded(
-          callId: 'id2',
-          startTime: DateTime.now(),
-          error: GrpcError.notFound('not found'),
-        );
-        expect(eventBus.events, contains('ended:${StatusCode.notFound}'));
-      });
-
-      test('emitCallEnded success has status 0', () {
-        eventBus.emitCallEnded(
-          callId: 'id3',
-          startTime: DateTime.now(),
-          response: 'response data',
-        );
-        expect(eventBus.events, contains('ended:0'));
-      });
+    test('generateCallId has hex-timestamp format', () {
+      final id = GrpcDevToolsEventBus().generateCallId();
+      expect(id, matches(RegExp(r'^[0-9a-f]+-[0-9a-f]+$')));
     });
 
-    group('interceptStreaming', () {
-      test('emits call_started with streaming type', () {
-        eventBus.emitCallStarted(
-          callId: 'sid1',
-          method: '/stream.Service/Watch',
-          type: RpcCallType.streaming,
-          request: null,
-          metadata: const {},
-        );
-        expect(
-          eventBus.events,
-          contains('started:/stream.Service/Watch:streaming'),
-        );
-      });
+    test('emitCallEnded encodes GrpcError status code', () {
+      final bus = FakeEventBus();
+      bus.emitCallEnded(
+        callId: 'id1',
+        startTime: DateTime.now(),
+        error: GrpcError.notFound('not found'),
+      );
+      expect(bus.events, contains('ended:${StatusCode.notFound}'));
+    });
 
-      test('emits message for each request in stream', () {
-        eventBus.emitCallMessage(
-          callId: 'sid2',
-          direction: RpcMessageDirection.request,
-          message: 'req1',
-        );
-        eventBus.emitCallMessage(
-          callId: 'sid2',
-          direction: RpcMessageDirection.request,
-          message: 'req2',
-        );
-        expect(eventBus.events.where((e) => e == 'message:request'), hasLength(2));
-      });
+    test('emitCallEnded encodes success as status 0', () {
+      final bus = FakeEventBus();
+      bus.emitCallEnded(
+        callId: 'id2',
+        startTime: DateTime.now(),
+        response: 'response data',
+      );
+      expect(bus.events, contains('ended:0'));
+    });
+
+    test('emitCallStarted records method and type', () {
+      final bus = FakeEventBus();
+      bus.emitCallStarted(
+        callId: 'id3',
+        method: '/test.Service/Hello',
+        type: RpcCallType.unary,
+        request: null,
+        metadata: const {},
+      );
+      expect(bus.events, contains('started:/test.Service/Hello:unary'));
+    });
+
+    test('emitCallMessage records direction', () {
+      final bus = FakeEventBus();
+      bus.emitCallMessage(
+        callId: 'id4',
+        direction: RpcMessageDirection.request,
+        message: 'req',
+      );
+      bus.emitCallMessage(
+        callId: 'id4',
+        direction: RpcMessageDirection.response,
+        message: 'res',
+      );
+      expect(bus.events, containsAll(['message:request', 'message:response']));
+    });
+  });
+
+  group('RpcCall', () {
+    final baseCall = RpcCall(
+      id: 'id1',
+      method: '/test.Service/Hello',
+      type: RpcCallType.unary,
+      startTime: DateTime(2024),
+    );
+
+    test('isCompleted is false when endTime is null', () {
+      expect(baseCall.isCompleted, isFalse);
+    });
+
+    test('duration is null when endTime is null', () {
+      expect(baseCall.duration, isNull);
+    });
+
+    test('copyWith creates new instance with updated fields', () {
+      final endTime = DateTime(2024, 1, 1, 0, 0, 1);
+      final updated = baseCall.copyWith(
+        endTime: endTime,
+        grpcStatusCode: 0,
+        grpcStatusMessage: 'OK',
+      );
+
+      expect(updated.id, 'id1');
+      expect(updated.method, '/test.Service/Hello');
+      expect(updated.endTime, endTime);
+      expect(updated.grpcStatusCode, 0);
+      expect(updated.grpcStatusMessage, 'OK');
+      expect(updated.isCompleted, isTrue);
+      expect(updated.isOk, isTrue);
+    });
+
+    test('copyWith does not mutate original', () {
+      baseCall.copyWith(
+        endTime: DateTime(2024, 1, 1, 0, 0, 1),
+        grpcStatusCode: 0,
+      );
+      expect(baseCall.endTime, isNull);
+      expect(baseCall.grpcStatusCode, isNull);
+    });
+
+    test('duration returns correct value after copyWith', () {
+      final end = baseCall.startTime.add(const Duration(milliseconds: 250));
+      final updated = baseCall.copyWith(endTime: end);
+      expect(updated.duration, const Duration(milliseconds: 250));
+    });
+
+    test('toJson includes all fields', () {
+      final updated = baseCall.copyWith(
+        endTime: DateTime(2024, 1, 1, 0, 0, 1),
+        grpcStatusCode: 0,
+        grpcStatusMessage: 'OK',
+      );
+      final json = updated.toJson();
+
+      expect(json['id'], 'id1');
+      expect(json['method'], '/test.Service/Hello');
+      expect(json['type'], 'unary');
+      expect(json['grpcStatusCode'], 0);
     });
   });
 }
