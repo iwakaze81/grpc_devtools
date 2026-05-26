@@ -134,7 +134,9 @@ class _SplitViewState extends State<_SplitView> {
             behavior: HitTestBehavior.opaque,
             onPointerDown: (_) => setState(() => _isDragging = true),
             onPointerMove: (e) {
-              if (!_isDragging) return;
+              if (!_isDragging) {
+                return;
+              }
               setState(() {
                 _leftWidth = (_leftWidth + e.delta.dx).clamp(_minLeftWidth, _maxLeftWidth);
               });

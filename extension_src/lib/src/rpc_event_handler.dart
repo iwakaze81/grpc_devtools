@@ -53,9 +53,7 @@ class RpcEventHandler extends ChangeNotifier {
     }
 
     // Explicitly ensure the Extension stream is subscribed on the VM side.
-    service.streamListen('Extension').catchError((_) {
-      // Ignore "stream already subscribed" error (code 103).
-    });
+    service.streamListen('Extension').ignore();
 
     _subscription = service.onExtensionEvent.listen(_handleEvent);
   }
