@@ -8,11 +8,10 @@ import 'package:grpc/grpc.dart';
 import 'package:grpc_devtools/src/proto_decoder.dart';
 import 'package:grpc_devtools/src/rpc_call.dart';
 
-// Event kinds posted to dart:developer
-const String kCallStarted = 'ext.grpc_devtools.call_started';
-const String kCallMessage = 'ext.grpc_devtools.call_message';
-const String kCallHeaders = 'ext.grpc_devtools.call_headers';
-const String kCallEnded = 'ext.grpc_devtools.call_ended';
+const String _kCallStarted = 'ext.grpc_devtools.call_started';
+const String _kCallMessage = 'ext.grpc_devtools.call_message';
+const String _kCallHeaders = 'ext.grpc_devtools.call_headers';
+const String _kCallEnded = 'ext.grpc_devtools.call_ended';
 
 class GrpcDevToolsEventBus {
   final _random = Random.secure();
@@ -33,7 +32,7 @@ class GrpcDevToolsEventBus {
     if (kReleaseMode) {
       return;
     }
-    developer.postEvent(kCallStarted, {
+    developer.postEvent(_kCallStarted, {
       'callId': callId,
       'method': method,
       'type': type.name,
@@ -51,7 +50,7 @@ class GrpcDevToolsEventBus {
     if (kReleaseMode) {
       return;
     }
-    developer.postEvent(kCallMessage, {
+    developer.postEvent(_kCallMessage, {
       'callId': callId,
       'direction': direction.name,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
@@ -66,7 +65,7 @@ class GrpcDevToolsEventBus {
     if (kReleaseMode) {
       return;
     }
-    developer.postEvent(kCallHeaders, {
+    developer.postEvent(_kCallHeaders, {
       'callId': callId,
       'headers': jsonEncode(headers),
     });
@@ -97,7 +96,7 @@ class GrpcDevToolsEventBus {
       statusMessage = 'OK';
     }
 
-    developer.postEvent(kCallEnded, {
+    developer.postEvent(_kCallEnded, {
       'callId': callId,
       'startTime': startTime.millisecondsSinceEpoch,
       'endTime': DateTime.now().millisecondsSinceEpoch,
