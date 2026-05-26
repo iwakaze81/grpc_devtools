@@ -14,11 +14,11 @@ A Flutter DevTools extension for visualizing and debugging gRPC communication in
 
 ## Installation
 
-Add to `dependencies` in your `pubspec.yaml`.
+Check the latest version on [pub.dev](https://pub.dev/packages/grpc_devtools) and add it to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  grpc_devtools: ^0.2.0
+  grpc_devtools: ^latest_version
 ```
 
 ## Setup
