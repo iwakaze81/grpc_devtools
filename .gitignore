@@ -8,6 +8,8 @@ pubspec.lock
 extension_src/build/
 extension_src/.dart_tool/
 extension_src/pubspec.lock
+extension_src/.flutter-plugins
+extension_src/.flutter-plugins-dependencies
 
 # IDE
 .idea/
