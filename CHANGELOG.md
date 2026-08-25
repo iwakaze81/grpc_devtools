@@ -1,3 +1,9 @@
+## 0.2.3
+
+* Expand protobuf compatibility to versions 3.x through 6.x, enabling use
+  with newer gRPC releases.
+* Add generated message coverage to the protobuf decoder tests.
+
 ## 0.2.2
 
 * Update Installation section in README to reference pub.dev for the latest version.
