@@ -77,6 +77,7 @@ extensions:
 - Flutter 3.24.0 以上
 - Dart 3.4.0 以上
 - gRPC パッケージ (`grpc: >=3.2.4 <6.0.0`)
+- Protobuf パッケージ (`protobuf: >=3.1.0 <7.0.0`)
 
 ## License
 
